@@ -3,9 +3,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('stripeproducts/', views.stripe_products, name= "setupintents"),
+    path('stripeproduct/<int:pk>', views.stripe_product_detail, name='setupintent'),
 
-    
-    
 
     path('stripesetupintents/', views.setupintent, name= "setupintents"),
     path('stripesetupintent/<int:pk>', views.setupintent_detail, name='setupintent'),

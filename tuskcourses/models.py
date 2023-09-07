@@ -40,6 +40,8 @@ class Course(models.Model):
     has_discount = models.BooleanField(default=False)
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     languages = models.ManyToManyField(Language, related_name="related_languages", blank=True)
+    stripe_price_id = models.CharField(max_length=256, null=True)
+
 
     
     def calculate_discounted_price(self):

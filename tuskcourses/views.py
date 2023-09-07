@@ -16,9 +16,6 @@ import stripe
 from dotenv import load_dotenv
 import os
 from djstripe.models import *
-load_dotenv()
-
-
 
 
 @api_view(['GET'])
@@ -56,11 +53,11 @@ def stripe_price_detail(request, pk):
         return Response({"detail": "Price not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = ProductSerializer(price, many=False)
+        serializer = PriceSerializer(price, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
-        serializer = ProductSerializer(price, data=request.data)
+        serializer = PriceSerializer(price, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
