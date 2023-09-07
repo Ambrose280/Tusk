@@ -1,8 +1,8 @@
 API Documentation
 
-# To get the detail of any Data Set, Use the ID 
-# Example Data:
-# {
+To get the detail of any Data Set, Use the ID 
+Example Data:
+ {
         "id": 12,
         "title": "Web Development",
         "description": "Learn how to build things for the web",
@@ -26,10 +26,10 @@ API Documentation
             3
         ]
     }
-# To get the detail you api/v1/coursedetail/12 to get the Above Data. The same Implies to other endpoints
-# The 1st endpoint e.g http://127.0.0.1:8000/api/v1/courses/ supports GET and POST requests. 
-# The detail supports only GET, PUT and DELETE
-# To know the HTTP Verbs supported by an endpoint, visit the swagger documentation or API Home Page
+To get the detail you api/v1/coursedetail/12 to get the Above Data. The same Implies to other endpoints
+The 1st endpoint e.g http://127.0.0.1:8000/api/v1/courses/ supports GET and POST requests. 
+The detail supports only GET, PUT and DELETE
+To know the HTTP Verbs supported by an endpoint, visit the swagger documentation or API Home Page
 
 api/v1/courses/
 api/v1/courses/?query=coursetitle
