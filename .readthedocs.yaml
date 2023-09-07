@@ -14,11 +14,11 @@ build:
 
 # Required: Specify the Sphinx configuration file (conf.py) location
 sphinx:
-  configuration: docs/source/conf.py  # Update with your actual path
+  configuration: conf.py  # Update with your actual path
 
 # Optional: Specify additional dependencies needed for building your documentation
 # For Django, you may need to install dependencies like sphinxcontrib-django
-requirements_file: docs/requirements.txt  # Update with your actual path
+requirements_file: requirements.txt  # Update with your actual path
 
 # Optional: Specify the Python environment for building documentation
 # python:
