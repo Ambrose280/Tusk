@@ -19,7 +19,7 @@ AdminSite.index_title = "Authorized Personnel Only"
 @admin_thumbnails.thumbnail('certificate')
 class CourseAdmin(admin.ModelAdmin):
     
-    list_display = ('id', 'title', 'vendor', 'duration', 'certificate_thumbnail', 'activation_status', 'course_image_thumbnail', 'users_count',)
+    list_display = ('id', 'title', 'vendor', 'duration', 'certificate_thumbnail', 'activation_status', 'course_image_thumbnail', 'users_count', 'calculate_discounted_price')
     list_filter = ('title',)
     search_fields = ('title',)
 

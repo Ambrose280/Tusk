@@ -16,7 +16,6 @@ import stripe
 from dotenv import load_dotenv
 import os
 from djstripe.models import *
-from django.http import JsonResponse
 
 
 

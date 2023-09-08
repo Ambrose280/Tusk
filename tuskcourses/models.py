@@ -24,8 +24,6 @@ class Language(models.Model):
     def __str__(self):
         return self.language
 
-stripe.api_key = os.environ.get('STRIPE_TEST_SECRET_KEY')
-
 class Course(models.Model):
     title = models.CharField(max_length=200)
     vendor = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
@@ -42,24 +40,19 @@ class Course(models.Model):
     has_discount = models.BooleanField(default=False)
     discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     languages = models.ManyToManyField(Language, related_name="related_languages", blank=True)
-    strip_id = models.CharField(max_length=255, null=True, blank=True)
+    stripe_price_id = models.CharField(max_length=256, null=True)
 
-    def save(self, *args, **kwargs):
 
-        product = Product.objects.filter(name=self.title).first()
-        if product:
-            raise ValidationError('Course Already exists!!')
-
-        if not product:
-            # Create the product on Stripe
-            stripe_product = stripe.Product.create(
-                name=self.title,
-                type='service',  # Adjust the type as needed
-            )
-        self.strip_id = stripe_product['id']
-        # Save the Course instance
-        super().save(*args, **kwargs)
-
+    
+    def calculate_discounted_price(self):
+        if self.has_discount:
+            discount_amount = self.price * (self.discount_percentage / 100)
+            discounted_price = self.price - discount_amount
+            return discounted_price
+        return self.price
+    
+    def __str__(self):
+        return self.title
 
     @property
     def users_count(self):
