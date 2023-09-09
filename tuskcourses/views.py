@@ -465,7 +465,8 @@ def payout_item(request, pk):
 def stripe_products(request):
     if request.method == 'GET':
         query = request.GET.get('query', '')
-        stripe.Product.create(name="Gold Special")
+
+        stripe.Product.create(name="Gold Special", name="Gold Special")
 
         # Use Q objects to perform a case-insensitive search in title and description fields
         prods = Product.objects.filter(Q(description__icontains=query))
