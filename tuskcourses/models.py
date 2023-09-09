@@ -146,6 +146,7 @@ class CourseReview(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
     reviewmsg = models.TextField(default='A very nice course')
+    
 
     def __str__(self):
         return self.reviewmsg

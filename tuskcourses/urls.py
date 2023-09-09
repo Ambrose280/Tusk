@@ -19,8 +19,8 @@ urlpatterns = [
     path('paymentmethods/', views.paymentmethods, name= "refunditems"),
     path('paymentmethod/<int:pk>', views.paymentmethod, name='refunditem'),
 
-    path('stripesubscriptionitems/', views.subscriptionitems, name= "subscriptionitems"),
-    path('stripesubscriptionitem/<int:pk>', views.subscriptionitem, name='subscriptionitem'),
+    path('stripesubscriptions/', views.subscriptionitems, name= "subscriptionitems"),
+    path('stripesubscription/<int:pk>', views.subscriptionitem, name='subscriptionitem'),
 
     path('stripesessions/', views.sessionlist, name= "sessions"),
     path('stripesessiondetail/<int:pk>', views.session_detail, name='sessiondetail'),

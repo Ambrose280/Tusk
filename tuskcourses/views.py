@@ -163,40 +163,38 @@ def subscriptionitems(request):
         query = request.GET.get('query', '')
 
         # Use Q objects to perform a case-insensitive search in title and description fields
-        subscriptionitems = SubscriptionItem.objects.filter(Q(id__icontains=query))
-        serializer = SubscriptionItemSerializer(subscriptionitems, many=True)
+        subscriptionitems = Subscription.objects.filter(Q(id__icontains=query))
+        serializer = SubscriptionSerializer(subscriptionitems, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
-        serializer = SubscriptionItemSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Create a customer
+        customer = stripe.Customer.create(source="tok_visa",  email="customer@example.com")
+        subscription = stripe.Subscription.create(customer=customer.id, items=[{"price": "price_12345",},])
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def subscriptionitem(request, pk):
     try:
-        subscriptionitem = SubscriptionItem.objects.get(pk=pk)
-    except SubscriptionItem.DoesNotExist:
-        return Response({"detail": "SubscriptionItem not found"}, status=status.HTTP_404_NOT_FOUND)
+        subscription = Subscription.objects.get(pk=pk)
+    except Subscription.DoesNotExist:
+        return Response({"detail": "Subscription not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = SubscriptionItemSerializer(subscriptionitem, many=False)
+        serializer = SubscriptionSerializer(subscriptionitem, many=False)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
-        serializer = SubscriptionItemSerializer(subscriptionitem, data=request.data)
+        serializer = SubscriptionSerializer(subscriptionitem, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'DELETE':
-        subscriptionitem.delete()
-        return Response({"detail": "SubscriptionItem deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        subscription.delete()
+        return Response({"detail": "Subscription deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET', 'POST'])
@@ -502,7 +500,7 @@ def stripe_product_detail(request, pk):
 
     if request.method == 'DELETE':
         prods.delete()
-        return Response({"detail": "Payment Log deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"detail": "Stripe Product deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
@@ -1086,3 +1084,7 @@ def course_review_details(request, pk):
     if request.method =='DELETE':
         course_review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
