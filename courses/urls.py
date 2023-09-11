@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions 
+from django.views.static import serve
 
 schema_view = get_schema_view(
     
@@ -38,7 +39,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-      path("stripe/", include("djstripe.urls", namespace="djstripe")),
+    path("stripe/", include("djstripe.urls", namespace="djstripe")),
+      
 ]
-if settings.DEBUG:
+if 1 > 0:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+

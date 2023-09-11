@@ -39,11 +39,14 @@ def stripe_prices(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
-        serializer = PriceSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            prod = stripe.Product.create(unit_amount=request.data["unit_amount"], currency=request.data["currency"], product=request.data["product"], recurring={"interval": "month"},)
+            return Response(prod, status=status.HTTP_200_OK)
+        except stripe.error.StripeError as e:
+            return Response({"Fortune, work smarter": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response({"Fortune, work smarter": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -82,11 +85,14 @@ def plan(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
-        serializer = PriceSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            prod = stripe.Plan.create(amount=request.data["amount"], currency=request.data["currency"], interval="month", product = request.data["product"],)
+            return Response(prod, status=status.HTTP_200_OK)
+        except stripe.error.StripeError as e:
+            return Response({"Fortune, work smarter": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response({"Fortune, work smarter": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -125,11 +131,16 @@ def sessionlist(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
-        serializer = SessionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            prod = stripe.financial_connections.Session.create(account_holder={"type": "customer", "customer": request.data['customer'],}, 
+                                                               permissions=["payment_method", "balances"], filters={"countries": [request.data['country']]},)
+            return Response(prod, status=status.HTTP_200_OK)
+        except stripe.error.StripeError as e:
+            return Response({"Fortune, work smarter": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response({"Fortune, work smarter": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -168,9 +179,14 @@ def subscriptionitems(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
-        # Create a customer
-        customer = stripe.Customer.create(source="tok_visa",  email="customer@example.com")
-        subscription = stripe.Subscription.create(customer=customer.id, items=[{"price": "price_12345",},])
+        try:
+            prod = stripe.Subscription.create(customer= request.data['customer'], 
+            items=[{"price": request.data['price']},],)
+            return Response(prod, status=status.HTTP_200_OK)
+        except stripe.error.StripeError as e:
+            return Response({"Fortune, work smarter": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response({"Fortune, work smarter": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -209,11 +225,13 @@ def paymentmethods(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
-        serializer = PaymentMethodSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            prod = stripe.PaymentMethod.create(type="card", card={"number": request.data['number'], "exp_month": request.data['exp_month'], "exp_year": request.data['exp_year'], "cvc": request.data['cvc'],},)
+            return Response(prod, status=status.HTTP_200_OK)
+        except stripe.error.StripeError as e:
+            return Response({"Fortune, work smarter": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response({"Fortune, work smarter": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -251,11 +269,13 @@ def refunditems(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
-        serializer = RefundSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            prod = stripe.Refund.create(charge= request.data['charge'])
+            return Response(prod, status=status.HTTP_200_OK)
+        except stripe.error.StripeError as e:
+            return Response({"Fortune, work smarter": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response({"Fortune, work smarter": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -294,11 +314,14 @@ def setupintent(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
-        serializer = SetupIntentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            prod = stripe.SetupIntent.create(automatic_payment_methods={"enabled": True},)
+            return Response(prod, status=status.HTTP_200_OK)
+        except stripe.error.StripeError as e:
+            return Response({"Fortune, work smarter": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response({"Fortune, work smarter": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -339,11 +362,14 @@ def invoice_items(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
-        serializer = InvoiceItemSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            prod = stripe.SetupIntent.create(automatic_payment_methods={"enabled": True},)
+            return Response(prod, status=status.HTTP_200_OK)
+        except stripe.error.StripeError as e:
+            return Response({"Fortune, work smarter": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response({"Fortune, work smarter": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -382,11 +408,14 @@ def payment_intents(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
-        serializer = PaymentIntentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            prod = stripe.PaymentIntent.create(amount= request.data['amount'], currency= request.data['currency'], automatic_payment_methods={"enabled": True})
+            return Response(prod, status=status.HTTP_200_OK)
+        except stripe.error.StripeError as e:
+            return Response({"Fortune, work smarter": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response({"Fortune, work smarter": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -427,11 +456,14 @@ def payout_items(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
-        serializer = PayoutSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            prod = stripe.PaymentIntent.create(amount= request.data['amount'], currency= request.data['currency'])
+            return Response(prod, status=status.HTTP_200_OK)
+        except stripe.error.StripeError as e:
+            return Response({"Fortune, work smarter": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response({"Fortune, work smarter": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -463,22 +495,30 @@ def payout_item(request, pk):
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def stripe_products(request):
+    stripe.api_key = os.environ.get('STRIPE_TEST_SECRET_KEY')
     if request.method == 'GET':
         query = request.GET.get('query', '')
-
-        stripe.Product.create(name="Gold Special", name="Gold Special")
-
         # Use Q objects to perform a case-insensitive search in title and description fields
         prods = Product.objects.filter(Q(description__icontains=query))
         serializer = ProductSerializer(prods, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
-        serializer = ProductSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            prod = stripe.Product.create(name=request.data["name"], description=request.data["description"])
+
+            return Response(prod, status=status.HTTP_200_OK)
+
+        except stripe.error.StripeError as e:
+            return Response({"Fortune, work smarter": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as ex:
+            # Handle other exceptions
+            return Response({"Fortune, work smarter": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
+        
+        
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -516,11 +556,19 @@ def subscriptions(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
-        serializer = SubscriptionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            prod = stripe.Product.create(customer=request.data["customer"], items=[{"price": request.data["price"]},],)
+
+            return Response(prod, status=status.HTTP_200_OK)
+
+        except stripe.error.StripeError as e:
+            return Response({"Fortune, work smarter": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as ex:
+            # Handle other exceptions
+            return Response({"Fortune, work smarter": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -644,11 +692,18 @@ def customers(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
-        serializer = DiscountSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            prod = stripe.Product.create(name=request.data["name"], description=request.data["description"])
+
+            return Response(prod, status=status.HTTP_200_OK)
+
+        except stripe.error.StripeError as e:
+            return Response({"Fortune, work smarter": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as ex:
+            # Handle other exceptions
+            return Response({"Fortune, work smarter": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
     
 @api_view(['GET', 'PUT', 'DELETE'])
